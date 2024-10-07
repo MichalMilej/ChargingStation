@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ChargingStationType {
+  id String @id @default(uuid()) @db.Uuid
+  name String @unique
+  plugCount Int @map("plug_count")
+  efficiency Float
+  currentType CurrentType
+
+  chargingStations ChargingStation[]
+
+  @@map("charging_station_type")
+}
+
+enum CurrentType {
+  AC
+  DC
+
+  @@map("current_type")
+}
+
+model Connector {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  priority Boolean @default(false)
+
+  chargingStation ChargingStation @relation(fields: [chargingStationId], references: [id])
+  chargingStationId String @db.Uuid
+
+  @@map("connector")
+}
+
+model ChargingStation {
+  id String @id @default(uuid()) @db.Uuid
+  name String @unique
+  deviceId String @map("device_id") @unique @default(uuid()) @db.Uuid
+  ipAddress String @map("ip_address") @db.Inet
+  firmwareVersion String @map("firmware_version")
+
+  chargingStationType ChargingStationType @relation(fields: [chargingStationTypeId], references: [id])
+  chargingStationTypeId String @db.Uuid
+  connectors Connector[]
+
+  @@map("charging_station")
+}
