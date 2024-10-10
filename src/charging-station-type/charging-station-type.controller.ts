@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
-import { ChargingStationTypeService } from './ch-station-type.service';
-import { Prisma } from '@prisma/client';
-import { CreateChargingStationTypeDto } from './dto/create-ch-station-type.dto';
-import { UpdateChargingStationTypeDto } from './dto/update-ch-station-type.dto';
+import { ChargingStationTypeService } from './charging-station-type.service';
+import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
+import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
 
 @Controller('charging-station-type')
 export class ChargingStationTypeController {

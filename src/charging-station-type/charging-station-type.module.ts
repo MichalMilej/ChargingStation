@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ChargingStationTypeService } from './ch-station-type.service';
-import { ChargingStationTypeController } from './ch-station-type.controller';
+import { ChargingStationTypeService } from './charging-station-type.service';
+import { ChargingStationTypeController } from './charging-station-type.controller';
 
 @Module({
   providers: [ChargingStationTypeService],

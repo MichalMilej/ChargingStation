@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/common/database.service';
-import { CreateChargingStationTypeDto } from './dto/create-ch-station-type.dto';
-import { UpdateChargingStationTypeDto } from './dto/update-ch-station-type.dto';
+import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
+import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
 
 @Injectable()
 export class ChargingStationTypeService {
