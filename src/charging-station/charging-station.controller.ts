@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ChargingStationService } from './charging-station.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
+import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 
 @Controller('charging-station')
 export class ChargingStationController {
@@ -26,4 +27,15 @@ export class ChargingStationController {
     return this.chargingStationService.getChargingStationByDeviceId(deviceId);
   }
 
+  @Get()
+  async getChargingStations(
+    @Query('pageNumber', ParseIntPipe) pageNumber: number, 
+    @Query('pageSize', ParseIntPipe) pageSize: number) {
+    return this.chargingStationService.getChargingStations(pageNumber, pageSize);
+  }
+
+  @Patch(':id')
+  async updateChargingStation(@Param('id', ParseUUIDPipe) id: string, @Body() updateChargingStationDto: UpdateChargingStationDto) {
+    return this.chargingStationService.updateChargingStation(id, updateChargingStationDto);
+  }
 }

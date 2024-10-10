@@ -1,8 +1,10 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { ChargingStationRepository } from './charging-station.repository';
 import { ChargingStationTypeRepository } from 'src/charging-station-type/charging-station-type.repository';
 import { CommonException } from 'src/common/common.exception';
+import { CommonPagination, Pagination } from 'src/common/common.pagination';
+import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 
 @Injectable()
 export class ChargingStationService {
@@ -58,5 +60,18 @@ export class ChargingStationService {
         }
         this.logger.log(`Returned ChargingStation with deviceId '${deviceId}'`);
         return chargingStation;
+    }
+
+    async getChargingStations(pageNumber: number, pageSize: number) {
+        const chargingStations = await this.chargingStationRepository.getChargingStations(pageNumber, pageSize);
+        const totalChargingStations = await this.chargingStationRepository.countTotalChargingStations();
+        const totalPages = CommonPagination.countTotalPages(totalChargingStations, pageSize);
+
+        this.logger.log(`Returned list of '${chargingStations.length}' ChargingStationType. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
+        return CommonPagination.paginate(chargingStations, new Pagination(pageNumber, pageSize, totalPages));
+    }
+
+    async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
+
     }
 }
