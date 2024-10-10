@@ -2,67 +2,59 @@ import { ConflictException, Injectable, Logger, NotFoundException } from '@nestj
 import { DatabaseService } from 'src/common/database.service';
 import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
 import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
+import { ChargingStationTypeRepository } from './charging-station-type.repository';
 
 @Injectable()
 export class ChargingStationTypeService {
-    logger: Logger;
+    private readonly logger: Logger;
 
-    constructor(private readonly databaseService: DatabaseService) {
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly chargingStationTypeRepository: ChargingStationTypeRepository) {
         this.logger = new Logger(ChargingStationTypeService.name);
     }
 
     async createChargingStationType(createChargingStationTypeDto: CreateChargingStationTypeDto) {
-        if (await this.databaseService.chargingStationType.findUnique({
-            where: {
-                name: createChargingStationTypeDto.name
-            }
-        }) !== null) {
-            const message = `Charging station type with name '${createChargingStationTypeDto.name}' already exists in database`;
+        if (await this.chargingStationTypeRepository.getChargingStationTypeByName(createChargingStationTypeDto.name) !== null) {
+            const message = `ChargingStationType with name '${createChargingStationTypeDto.name}' already exists in database`;
             this.logger.log(message);
             throw new ConflictException(message);
         }
-
-        const chargingStationType = await this.databaseService.chargingStationType.create({
-            data: createChargingStationTypeDto
-        });
-        this.logger.log(`Created charging station type with id '${chargingStationType.id}'`);
+        const chargingStationType = await this.chargingStationTypeRepository.createChargingStationType(createChargingStationTypeDto);
+        this.logger.log(`Created ChargingStationType with id '${chargingStationType.id}'`);
         return chargingStationType;
     }
 
     async getChargingStationTypeById(id: string) {
-        const chargingStationType = await this.databaseService.chargingStationType.findUnique({
-            where: { id }
-        });
+        const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(id);
         if (chargingStationType !== null) {
-            this.logger.log(`Returned charging station type with id '${chargingStationType.id}'`);
+            this.logger.log(`Returned ChargingStationType with id '${chargingStationType.id}'`);
             return chargingStationType;
         } else {
-            this.chargingStationTypeNotFound('id', id);
+            const message = `ChargingStationType with id '${id}' not found`;
+            this.logger.log(message);
+            throw new NotFoundException(message);
         }
     }
 
     async getChargingStationTypeByName(name: string) {
-        const chargingStationType = await this.databaseService.chargingStationType.findUnique({
-            where: { name }
-        });
+        const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeByName(name);
         if (chargingStationType !== null) {
-            this.logger.log(`Returned charging station type with name '${chargingStationType.name}'`);
+            this.logger.log(`Returned ChargingStationType with name '${chargingStationType.name}'`);
             return chargingStationType;
         } else {
-            this.chargingStationTypeNotFound('name', name);
+            const message = `ChargingStationType with name '${name}' not found`;
+            this.logger.log(message);
+            throw new NotFoundException(message);
         }
     }
 
     async getChargingStationTypes(pageNumber: number = 1, pageSize: number = 5) {
-        const skip = (pageNumber-1) * pageSize;
-        const chargingStationTypes = await this.databaseService.chargingStationType.findMany({
-            skip: skip,
-            take: pageSize
-        });
-        const totalChargingStationTypes = await this.databaseService.chargingStationType.count();
+        const chargingStationTypes = await this.chargingStationTypeRepository.getChargingStationTypes(pageNumber, pageSize);
+        const totalChargingStationTypes = await this.chargingStationTypeRepository.countTotalChargingStationTypes();
         const totalPages = Math.ceil(totalChargingStationTypes / pageSize);
 
-        this.logger.log(`Returned '${chargingStationTypes.length}' charging station types - pageNumber '${pageNumber}', pageSize '${pageSize}'`);
+        this.logger.log(`Returned list of '${chargingStationTypes.length}' ChargingStationType. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
         return {
             chargingStationTypes: chargingStationTypes,
             pagination: {
@@ -75,31 +67,18 @@ export class ChargingStationTypeService {
     }
 
     async updateChargingStationType(id: string, updateChargingStationTypeDto: UpdateChargingStationTypeDto) {
-        if (await this.isChargingStationTypeWithIdInDatabase(id) === false) {
-            this.chargingStationTypeNotFound('id', id);
+        if (await this.chargingStationTypeRepository.getChargingStationTypeById(id) === null) {
+            const message = `ChargingStationType with id '${id}' not found`;
+            this.logger.log(message);
+            throw new NotFoundException(message);
         }
 
-        const chargingStationType = await this.databaseService.chargingStationType.update({
-            where: { id },
-            data: updateChargingStationTypeDto
-        });
-        this.logger.log(`Updated charging station type with id '${chargingStationType.id}'`);
+        const chargingStationType = await this.chargingStationTypeRepository.updateChargingStationType(id, updateChargingStationTypeDto);
+        this.logger.log(`Updated ChargingStationType with id '${chargingStationType.id}'`);
         return chargingStationType;
     }
 
     async deleteChargingStationType(id: string) {
         
-    }
-
-    private async isChargingStationTypeWithIdInDatabase(id: string) {
-        return this.databaseService.chargingStationType.findUnique({
-            where: { id }
-        }) !== null;
-    }
-
-    private chargingStationTypeNotFound(paramName: string, paramValue: string) {
-        const message = `Charging station type with ${paramName} '${paramValue}' not found`;
-        this.logger.log(message);
-        throw new NotFoundException(message);
     }
 }
