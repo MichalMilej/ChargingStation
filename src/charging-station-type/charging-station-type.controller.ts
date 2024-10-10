@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ChargingStationTypeService } from './charging-station-type.service';
 import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
 import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
@@ -14,7 +14,7 @@ export class ChargingStationTypeController {
     }
 
     @Get(':id')
-    async getChargingStationTypeById(@Param('id') id: string) {
+    async getChargingStationTypeById(@Param('id', ParseUUIDPipe) id: string) {
         return this.chargingStationTypeService.getChargingStationTypeById(id);
     }
 
@@ -31,13 +31,13 @@ export class ChargingStationTypeController {
     }
 
     @Patch(':id')
-    async updateChargingStationType(@Param('id') id: string,
+    async updateChargingStationType(@Param('id', ParseUUIDPipe) id: string,
         @Body() updateChargingStationTypeDto: UpdateChargingStationTypeDto) {
         return this.chargingStationTypeService.updateChargingStationType(id, updateChargingStationTypeDto);
     }
 
     @Delete(':id')
-    async deleteChargingStationType(@Param('id') id: string) {
+    async deleteChargingStationType(@Param('id', ParseUUIDPipe) id: string) {
         return this.chargingStationTypeService.deleteChargingStationType(id);
     }
 

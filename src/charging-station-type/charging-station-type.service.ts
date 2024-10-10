@@ -3,6 +3,7 @@ import { DatabaseService } from 'src/common/database.service';
 import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
 import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
 import { ChargingStationTypeRepository } from './charging-station-type.repository';
+import { CommonException } from 'src/common/common.exception';
 
 @Injectable()
 export class ChargingStationTypeService {
@@ -15,10 +16,9 @@ export class ChargingStationTypeService {
     }
 
     async createChargingStationType(createChargingStationTypeDto: CreateChargingStationTypeDto) {
-        if (await this.chargingStationTypeRepository.getChargingStationTypeByName(createChargingStationTypeDto.name) !== null) {
-            const message = `ChargingStationType with name '${createChargingStationTypeDto.name}' already exists in database`;
-            this.logger.log(message);
-            throw new ConflictException(message);
+        const name = createChargingStationTypeDto.name;
+        if (await this.chargingStationTypeRepository.getChargingStationTypeByName(name) !== null) {
+            CommonException.conflictException(this.logger, 'ChargingStationType', 'name', name);
         }
         const chargingStationType = await this.chargingStationTypeRepository.createChargingStationType(createChargingStationTypeDto);
         this.logger.log(`Created ChargingStationType with id '${chargingStationType.id}'`);
@@ -28,12 +28,10 @@ export class ChargingStationTypeService {
     async getChargingStationTypeById(id: string) {
         const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(id);
         if (chargingStationType !== null) {
-            this.logger.log(`Returned ChargingStationType with id '${chargingStationType.id}'`);
+            this.logger.log(`Returned ChargingStationType with id '${id}'`);
             return chargingStationType;
         } else {
-            const message = `ChargingStationType with id '${id}' not found`;
-            this.logger.log(message);
-            throw new NotFoundException(message);
+            CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
         }
     }
 
@@ -43,9 +41,7 @@ export class ChargingStationTypeService {
             this.logger.log(`Returned ChargingStationType with name '${chargingStationType.name}'`);
             return chargingStationType;
         } else {
-            const message = `ChargingStationType with name '${name}' not found`;
-            this.logger.log(message);
-            throw new NotFoundException(message);
+            CommonException.notFoundException(this.logger, 'ChargingStationType', 'name', name);
         }
     }
 
@@ -68,11 +64,8 @@ export class ChargingStationTypeService {
 
     async updateChargingStationType(id: string, updateChargingStationTypeDto: UpdateChargingStationTypeDto) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeById(id) === null) {
-            const message = `ChargingStationType with id '${id}' not found`;
-            this.logger.log(message);
-            throw new NotFoundException(message);
+            CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
         }
-
         const chargingStationType = await this.chargingStationTypeRepository.updateChargingStationType(id, updateChargingStationTypeDto);
         this.logger.log(`Updated ChargingStationType with id '${chargingStationType.id}'`);
         return chargingStationType;
