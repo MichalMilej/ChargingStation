@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "src/common/database.service";
 import { CreateChargingStationDto } from "./dto/create-charging-station.dto";
+import { UpdateChargingStationDto } from "./dto/update-charging-station.dto";
 
 @Injectable()
 export class ChargingStationRepository {
@@ -36,6 +37,13 @@ export class ChargingStationRepository {
             skip: skip,
             take: pageSize
         });
+    }
+
+    async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
+        return this.databaseService.chargingStation.update({
+            data: updateChargingStationDto,
+            where: {id}
+        })
     }
 
     async countTotalChargingStations() {

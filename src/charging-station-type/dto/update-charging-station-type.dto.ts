@@ -5,19 +5,19 @@ export class UpdateChargingStationTypeDto {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    name: string;
+    readonly name: string;
     
     @IsOptional()
     @IsInt()
     @IsPositive()
-    plugCount: number;
+    readonly plugCount: number;
 
     @IsOptional()
     @IsNumber()
     @IsPositive()
-    efficiency: number;
+    readonly efficiency: number;
 
     @IsOptional()
     @IsEnum(CurrentType)
-    currentType: CurrentType;
+    readonly currentType: CurrentType;
 }

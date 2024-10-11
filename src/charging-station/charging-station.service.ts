@@ -18,18 +18,10 @@ export class ChargingStationService {
     }
 
     async createChargingStation(createChargingStationDto: CreateChargingStationDto) {
-        const name = createChargingStationDto.name;
-        if (await this.chargingStationRepository.getChargingStationByName(name) !== null) {
-            CommonException.conflictException(this.logger, 'ChargingStation', 'name', name);
-        }
-        const deviceId = createChargingStationDto.deviceId;
-        if (await this.chargingStationRepository.getChargingStationByDeviceId(deviceId) !== null) {
-            CommonException.conflictException(this.logger, "ChargingStation", 'deviceId', deviceId);
-        }
-        const chargingStationTypeId = createChargingStationDto.chargingStationTypeId;
-        if (await this.chargingStationTypeRepository.getChargingStationTypeById(chargingStationTypeId) === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStationType', 'chargingStationTypeId', chargingStationTypeId);
-        }
+        await this.validateNameConflict(createChargingStationDto.name);
+        await this.validateDeviceIdConflict(createChargingStationDto.deviceId);
+        await this.validateChargingStationTypeIdExists(createChargingStationDto.chargingStationTypeId);
+        
         const newChargingStation = await this.chargingStationRepository.createChargingStation(createChargingStationDto);
         this.logger.log(`Created ChargingStation with id '${newChargingStation.id}'`);
         return newChargingStation;
@@ -72,6 +64,38 @@ export class ChargingStationService {
     }
 
     async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
+        if (await this.chargingStationRepository.getChargingStationById(id) === null) {
+            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
+        }
+        if (updateChargingStationDto.name !== undefined) {
+            await this.validateNameConflict(updateChargingStationDto.name);
+        }
+        if (updateChargingStationDto.deviceId !== undefined) {
+            await this.validateDeviceIdConflict(updateChargingStationDto.deviceId);
+        }
+        if (updateChargingStationDto.chargingStationTypeId !== undefined) {
+            await this.validateChargingStationTypeIdExists(updateChargingStationDto.chargingStationTypeId);
+        }
+        const updatedChargingStation = await this.chargingStationRepository.updateChargingStation(id, updateChargingStationDto);
+        this.logger.log(`Updated ChargingStation with id '${id}'`);('');
+        return updateChargingStationDto;
+    }
 
+    private async validateNameConflict(name: string) {
+        if (await this.chargingStationRepository.getChargingStationByName(name) !== null) {
+            CommonException.conflictException(this.logger, 'ChargingStation', 'name', name);
+        }
+    }
+
+    private async validateDeviceIdConflict(deviceId: string) {
+        if (await this.chargingStationRepository.getChargingStationByDeviceId(deviceId) !== null) {
+            CommonException.conflictException(this.logger, "ChargingStation", 'deviceId', deviceId);
+        }
+    }
+
+    private async validateChargingStationTypeIdExists(chargingStationTypeId: string) {
+        if (await this.chargingStationTypeRepository.getChargingStationTypeById(chargingStationTypeId) === null) {
+            CommonException.notFoundException(this.logger, 'ChargingStationType', 'chargingStationTypeId', chargingStationTypeId);
+        }
     }
 }

@@ -4,18 +4,18 @@ export class CreateChargingStationDto {
 
     @IsString()
     @IsNotEmpty()
-    name: string;
+    readonly name: string;
 
     @IsUUID()
-    deviceId: string;
+    readonly deviceId: string;
 
     @IsIP()
-    ipAddress: string;
+    readonly ipAddress: string;
 
     @IsString()
     @IsNotEmpty()
-    firmwareVersion: string;
+    readonly firmwareVersion: string;
 
     @IsUUID()
-    chargingStationTypeId: string;
+    readonly chargingStationTypeId: string;
 }

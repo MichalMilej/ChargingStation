@@ -4,16 +4,16 @@ import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from "class
 export class CreateChargingStationTypeDto {
     @IsString()
     @IsNotEmpty()
-    name: string;
+    readonly name: string;
     
     @IsInt()
     @IsPositive()
-    plugCount: number;
+    readonly plugCount: number;
 
     @IsNumber()
     @IsPositive()
-    efficiency: number;
+    readonly efficiency: number;
 
     @IsEnum(CurrentType)
-    currentType: CurrentType;
+    readonly currentType: CurrentType;
 }

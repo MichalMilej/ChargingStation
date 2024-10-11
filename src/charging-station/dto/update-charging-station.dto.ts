@@ -5,22 +5,22 @@ export class UpdateChargingStationDto {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    name: string;
+    readonly name: string;
 
     @IsOptional()
     @IsUUID()
-    deviceId: string;
+    readonly deviceId: string;
 
     @IsOptional()
     @IsIP()
-    ipAddress: string;
+    readonly ipAddress: string;
 
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    firmwareVersion: string;
+    readonly firmwareVersion: string;
 
     @IsOptional()
     @IsUUID()
-    chargingStationTypeId: string;
+    readonly chargingStationTypeId: string;
 }
