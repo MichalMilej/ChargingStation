@@ -9,35 +9,35 @@ export class ChargingStationTypeController {
     constructor(private readonly chargingStationTypeService: ChargingStationTypeService) {}
 
     @Post()
-    async createChargingStationType(@Body() createChargingStationTypeDto: CreateChargingStationTypeDto) {
+    createChargingStationType(@Body() createChargingStationTypeDto: CreateChargingStationTypeDto) {
         return this.chargingStationTypeService.createChargingStationType(createChargingStationTypeDto);
     }
 
     @Get(':id')
-    async getChargingStationTypeById(@Param('id', ParseUUIDPipe) id: string) {
+    getChargingStationTypeById(@Param('id', ParseUUIDPipe) id: string) {
         return this.chargingStationTypeService.getChargingStationTypeById(id);
     }
 
     @Get('name/:name')
-    async getChargingStationTypeByName(@Param('name') name: string) {
+    getChargingStationTypeByName(@Param('name') name: string) {
         return this.chargingStationTypeService.getChargingStationTypeByName(name);
     }
 
     @Get()
-    async getChargingStationTypes(
+    getChargingStationTypes(
         @Query('pageNumber', ParseIntPipe) pageNumber: number, 
         @Query('pageSize', ParseIntPipe) pageSize: number) {
         return this.chargingStationTypeService.getChargingStationTypes(pageNumber, pageSize);
     }
 
     @Patch(':id')
-    async updateChargingStationType(@Param('id', ParseUUIDPipe) id: string,
+    updateChargingStationType(@Param('id', ParseUUIDPipe) id: string,
         @Body() updateChargingStationTypeDto: UpdateChargingStationTypeDto) {
         return this.chargingStationTypeService.updateChargingStationType(id, updateChargingStationTypeDto);
     }
 
     @Delete(':id')
-    async deleteChargingStationType(@Param('id', ParseUUIDPipe) id: string) {
+    deleteChargingStationType(@Param('id', ParseUUIDPipe) id: string) {
         return this.chargingStationTypeService.deleteChargingStationType(id);
     }
 

@@ -31,8 +31,8 @@ model Connector {
   name String
   priority Boolean @default(false)
 
-  chargingStation ChargingStation @relation(fields: [chargingStationId], references: [id])
-  chargingStationId String @db.Uuid
+  chargingStation ChargingStation? @relation(fields: [chargingStationId], references: [id])
+  chargingStationId String? @db.Uuid
 
   @@map("connector")
 }

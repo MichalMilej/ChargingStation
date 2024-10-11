@@ -28,14 +28,14 @@ export class ChargingStationController {
   }
 
   @Get()
-  async getChargingStations(
+  getChargingStations(
     @Query('pageNumber', ParseIntPipe) pageNumber: number, 
     @Query('pageSize', ParseIntPipe) pageSize: number) {
     return this.chargingStationService.getChargingStations(pageNumber, pageSize);
   }
 
   @Patch(':id')
-  async updateChargingStation(@Param('id', ParseUUIDPipe) id: string, @Body() updateChargingStationDto: UpdateChargingStationDto) {
+  updateChargingStation(@Param('id', ParseUUIDPipe) id: string, @Body() updateChargingStationDto: UpdateChargingStationDto) {
     return this.chargingStationService.updateChargingStation(id, updateChargingStationDto);
   }
 }

@@ -17,7 +17,7 @@ CREATE TABLE "connector" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "priority" BOOLEAN NOT NULL DEFAULT false,
-    "chargingStationId" UUID NOT NULL,
+    "chargingStationId" UUID,
 
     CONSTRAINT "connector_pkey" PRIMARY KEY ("id")
 );
@@ -44,7 +44,7 @@ CREATE UNIQUE INDEX "charging_station_name_key" ON "charging_station"("name");
 CREATE UNIQUE INDEX "charging_station_device_id_key" ON "charging_station"("device_id");
 
 -- AddForeignKey
-ALTER TABLE "connector" ADD CONSTRAINT "connector_chargingStationId_fkey" FOREIGN KEY ("chargingStationId") REFERENCES "charging_station"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "connector" ADD CONSTRAINT "connector_chargingStationId_fkey" FOREIGN KEY ("chargingStationId") REFERENCES "charging_station"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "charging_station" ADD CONSTRAINT "charging_station_chargingStationTypeId_fkey" FOREIGN KEY ("chargingStationTypeId") REFERENCES "charging_station_type"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

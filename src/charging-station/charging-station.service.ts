@@ -59,7 +59,7 @@ export class ChargingStationService {
         const totalChargingStations = await this.chargingStationRepository.countTotalChargingStations();
         const totalPages = CommonPagination.countTotalPages(totalChargingStations, pageSize);
 
-        this.logger.log(`Returned list of '${chargingStations.length}' ChargingStationType. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
+        this.logger.log(`Returned list of '${chargingStations.length}' ChargingStation. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
         return CommonPagination.paginate(chargingStations, new Pagination(pageNumber, pageSize, totalPages));
     }
 
