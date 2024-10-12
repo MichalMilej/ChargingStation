@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post,
 import { ChargingStationService } from './charging-station.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+import { ChargingStationQueryDto } from './dto/charging-station.query.dto';
+import { PaginationDto } from 'src/common/pagination.dto';
 
 @Controller('charging-station')
 export class ChargingStationController {
@@ -29,9 +31,8 @@ export class ChargingStationController {
 
   @Get()
   getChargingStations(
-    @Query('pageNumber', ParseIntPipe) pageNumber: number, 
-    @Query('pageSize', ParseIntPipe) pageSize: number) {
-    return this.chargingStationService.getChargingStations(pageNumber, pageSize);
+    @Query() chargingStationQueryDto: ChargingStationQueryDto) {
+    return this.chargingStationService.getChargingStations(chargingStationQueryDto);
   }
 
   @Patch(':id')

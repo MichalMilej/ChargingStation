@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "src/common/database.service";
 import { CreateChargingStationTypeDto } from "./dto/create-charging-station-type.dto";
 import { UpdateChargingStationTypeDto } from "./dto/update-charging-station-type.dto";
-import { ChargingStationTypeFilterDto } from "./dto/charging-station-type.filter.dto";
+import { ChargingStationTypeQueryDto } from "./dto/charging-station-type.query.dto";
 
 @Injectable()
 export class ChargingStationTypeRepository {
@@ -27,16 +27,16 @@ export class ChargingStationTypeRepository {
         });
     }
 
-    async getChargingStationTypes(pageNumber: number = 1, pageSize: number = 5, filterDto: ChargingStationTypeFilterDto) {
-        const skip = (pageNumber-1) * pageSize;
+    async getChargingStationTypes(queryDto: ChargingStationTypeQueryDto) {
+        const skip = (queryDto.pageNumber-1) * queryDto.pageSize;
         return this.databaseService.chargingStationType.findMany({
             where: {
-                name: filterDto.name ? { contains: filterDto.name } : undefined,
-                plugCount: filterDto.plugCount ? { equals: filterDto.plugCount } : undefined,
-                currentType: filterDto.currentType ? { equals: filterDto.currentType } : undefined
+                name: queryDto.name !== undefined ? { contains: queryDto.name } : undefined,
+                plugCount: queryDto.plugCount !== undefined ? { equals: queryDto.plugCount } : undefined,
+                currentType: queryDto.currentType !== undefined ? { equals: queryDto.currentType } : undefined
             },
             skip: skip,
-            take: pageSize
+            take: queryDto.pageSize
         });
     }
 

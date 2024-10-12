@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "src/common/database.service";
 import { CreateChargingStationDto } from "./dto/create-charging-station.dto";
 import { UpdateChargingStationDto } from "./dto/update-charging-station.dto";
+import { ChargingStationQueryDto } from "./dto/charging-station.query.dto";
 
 @Injectable()
 export class ChargingStationRepository {
@@ -45,11 +46,17 @@ export class ChargingStationRepository {
         });
     }
 
-    async getChargingStations(pageNumber: number = 1, pageSize: number = 5) {
-        const skip = (pageNumber-1) * pageSize;
+    async getChargingStations(queryDto: ChargingStationQueryDto) {
+        const skip = (queryDto.pageNumber-1) * queryDto.pageSize;
         return this.databaseService.chargingStation.findMany({
+            where: {
+                name: queryDto.name !== undefined ? { contains: queryDto.name } : undefined,
+                ipAddress: queryDto.ipAddress !== undefined ? { contains: queryDto.ipAddress } : undefined,
+                firmwareVersion: queryDto.firmwareVersion !== undefined ? { startsWith: queryDto.firmwareVersion } : undefined,
+                chargingStationTypeId: queryDto.chargingStationTypeId !== undefined ? { equals: queryDto.chargingStationTypeId } : undefined
+            },
             skip: skip,
-            take: pageSize
+            take: queryDto.pageSize
         });
     }
 

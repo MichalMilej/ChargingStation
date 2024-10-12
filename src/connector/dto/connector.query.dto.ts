@@ -1,8 +1,9 @@
 import { BadRequestException } from "@nestjs/common";
 import { Transform } from "class-transformer";
-import { IsBoolean, IsNotEmpty, IsOptional, IsUUID } from "class-validator";
+import { IsNotEmpty, IsOptional, IsUUID } from "class-validator";
+import { PaginationDto } from "src/common/pagination.dto";
 
-export class ConnectorFilterDto {
+export class ConnectorQueryDto extends PaginationDto {
 
     @IsOptional()
     @IsNotEmpty()
@@ -16,6 +17,7 @@ export class ConnectorFilterDto {
         }
         return value === 'true' ? true : false;
     })
+    
     readonly priority: boolean;
 
     @IsOptional()

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "src/common/database.service";
 import { CreateConnectorDto } from "./dto/create-connector.dto";
-import { ConnectorFilterDto } from "./dto/connector.filter.dto";
+import { ConnectorQueryDto } from "./dto/connector.query.dto";
 
 @Injectable()
 export class ConnectorRepository {
@@ -20,16 +20,16 @@ export class ConnectorRepository {
         })
     }
 
-    async getConnectors(pageNumber: number = 1, pageSize: number = 5, filterDto: ConnectorFilterDto) {
-        const skip = (pageNumber-1) * pageSize;
+    async getConnectors(queryDto: ConnectorQueryDto) {
+        const skip = (queryDto.pageNumber-1) * queryDto.pageSize;
         return this.databaseService.connector.findMany({
             where: {
-                name: filterDto.name ? { contains: filterDto.name } : undefined,
-                priority: filterDto.priority ? { equals: filterDto.priority } : undefined,
-                chargingStationId: filterDto.chargingStationId ? { equals: filterDto.chargingStationId } : undefined
+                name: queryDto.name !== undefined ? { contains: queryDto.name } : undefined,
+                priority: queryDto.priority !== undefined ? { equals: queryDto.priority } : undefined,
+                chargingStationId: queryDto.chargingStationId !== undefined ? { equals: queryDto.chargingStationId } : undefined
             },
             skip: skip,
-            take: pageSize
+            take: queryDto.pageSize
         });
     }
 

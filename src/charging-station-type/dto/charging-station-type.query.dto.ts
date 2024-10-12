@@ -1,8 +1,9 @@
 import { CurrentType } from "@prisma/client";
 import { Type } from "class-transformer";
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsPositive } from "class-validator";
+import { PaginationDto } from "src/common/pagination.dto";
 
-export class ChargingStationTypeFilterDto {
+export class ChargingStationTypeQueryDto extends PaginationDto {
 
     @IsOptional()
     @IsNotEmpty()
@@ -10,7 +11,6 @@ export class ChargingStationTypeFilterDto {
 
     @IsOptional()
     @Type(() => Number)
-    @IsNumber()
     @IsPositive()
     readonly plugCount: number;
 

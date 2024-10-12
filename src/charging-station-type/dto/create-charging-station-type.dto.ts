@@ -1,5 +1,5 @@
 import { CurrentType } from "@prisma/client";
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive, IsString } from "class-validator";
+import { IsEnum, IsInt, IsNotEmpty, IsPositive, IsString } from "class-validator";
 
 export class CreateChargingStationTypeDto {
     @IsString()
@@ -10,7 +10,6 @@ export class CreateChargingStationTypeDto {
     @IsPositive()
     readonly plugCount: number;
 
-    @IsNumber()
     @IsPositive()
     readonly efficiency: number;
 

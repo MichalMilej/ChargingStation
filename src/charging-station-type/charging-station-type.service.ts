@@ -5,7 +5,7 @@ import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type
 import { ChargingStationTypeRepository } from './charging-station-type.repository';
 import { CommonException } from 'src/common/common.exception';
 import { CommonPagination, Pagination } from 'src/common/common.pagination';
-import { ChargingStationTypeFilterDto } from './dto/charging-station-type.filter.dto';
+import { ChargingStationTypeQueryDto } from './dto/charging-station-type.query.dto';
 
 @Injectable()
 export class ChargingStationTypeService {
@@ -42,12 +42,12 @@ export class ChargingStationTypeService {
         return chargingStationType;
     }
 
-    async getChargingStationTypes(pageNumber: number = 1, pageSize: number = 5, chargingStationTypeFilterDto: ChargingStationTypeFilterDto) {
-        const chargingStationTypes = await this.chargingStationTypeRepository.getChargingStationTypes(pageNumber, pageSize, chargingStationTypeFilterDto);
+    async getChargingStationTypes(chargingStationTypeQueryDto: ChargingStationTypeQueryDto) {
+        const chargingStationTypes = await this.chargingStationTypeRepository.getChargingStationTypes(chargingStationTypeQueryDto);
         const totalChargingStationTypes = await this.chargingStationTypeRepository.countTotalChargingStationTypes();
 
-        this.logger.log(`Returned list of '${chargingStationTypes.length}' ChargingStationType. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
-        return CommonPagination.paginate(chargingStationTypes, new Pagination(pageNumber, pageSize, totalChargingStationTypes));
+        this.logger.log(`Returned list of '${chargingStationTypes.length}' ChargingStationType`);
+        return CommonPagination.paginate(chargingStationTypes, new Pagination(chargingStationTypeQueryDto, totalChargingStationTypes));
     }
 
     async updateChargingStationType(id: string, updateChargingStationTypeDto: UpdateChargingStationTypeDto) {

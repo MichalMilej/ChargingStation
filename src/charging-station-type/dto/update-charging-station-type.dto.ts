@@ -13,7 +13,6 @@ export class UpdateChargingStationTypeDto {
     readonly plugCount: number;
 
     @IsOptional()
-    @IsNumber()
     @IsPositive()
     readonly efficiency: number;
 

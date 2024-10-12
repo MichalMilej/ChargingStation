@@ -6,6 +6,7 @@ import { CommonException } from 'src/common/common.exception';
 import { CommonPagination, Pagination } from 'src/common/common.pagination';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ConnectorRepository } from 'src/connector/connector.repository';
+import { ChargingStationQueryDto } from './dto/charging-station.query.dto';
 
 @Injectable()
 export class ChargingStationService {
@@ -58,12 +59,12 @@ export class ChargingStationService {
         return chargingStation;
     }
 
-    async getChargingStations(pageNumber: number, pageSize: number) {
-        const chargingStations = await this.chargingStationRepository.getChargingStations(pageNumber, pageSize);
+    async getChargingStations(chargingStationQueryDto: ChargingStationQueryDto) {
+        const chargingStations = await this.chargingStationRepository.getChargingStations(chargingStationQueryDto);
         const totalChargingStations = await this.chargingStationRepository.countTotalChargingStations();
 
-        this.logger.log(`Returned list of '${chargingStations.length}' ChargingStation. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
-        return CommonPagination.paginate(chargingStations, new Pagination(pageNumber, pageSize, totalChargingStations));
+        this.logger.log(`Returned list of '${chargingStations.length}' ChargingStation`);
+        return CommonPagination.paginate(chargingStations, new Pagination(chargingStationQueryDto, totalChargingStations));
     }
 
     async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
