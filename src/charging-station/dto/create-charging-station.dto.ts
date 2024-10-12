@@ -1,4 +1,4 @@
-import { IsArray, IsIP, IsNotEmpty, IsString, IsUUID, Validator } from "class-validator";
+import { IsArray, IsIP, IsNotEmpty, IsString, IsUUID } from "class-validator";
 
 export class CreateChargingStationDto {
 

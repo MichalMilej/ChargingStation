@@ -61,10 +61,9 @@ export class ChargingStationService {
     async getChargingStations(pageNumber: number, pageSize: number) {
         const chargingStations = await this.chargingStationRepository.getChargingStations(pageNumber, pageSize);
         const totalChargingStations = await this.chargingStationRepository.countTotalChargingStations();
-        const totalPages = CommonPagination.countTotalPages(totalChargingStations, pageSize);
 
         this.logger.log(`Returned list of '${chargingStations.length}' ChargingStation. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
-        return CommonPagination.paginate(chargingStations, new Pagination(pageNumber, pageSize, totalPages));
+        return CommonPagination.paginate(chargingStations, new Pagination(pageNumber, pageSize, totalChargingStations));
     }
 
     async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {

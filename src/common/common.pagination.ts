@@ -2,18 +2,23 @@ export class CommonPagination {
     static paginate(data: object, pagination: Pagination) {
         return {
             data: data,
-            pagination: pagination
+            pagination: {
+                pageNumber: pagination.pageNumber,
+                pageSize: pagination.pageSize,
+                totalPages: pagination.totalPages,
+                totalSize: pagination.totalSize
+            }
         }
-    }
-
-    static countTotalPages(totalSize: number, pageSize: number): number {
-        return Math.ceil(totalSize / pageSize);
     }
 }
 
 export class Pagination {
+    readonly totalPages: number;
+
     constructor(
         public readonly pageNumber: number, 
         public readonly pageSize: number, 
-        public readonly totalPages: number) {}
+        public readonly totalSize: number) {
+            this.totalPages = Math.ceil(totalSize / pageSize);
+        }
 }

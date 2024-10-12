@@ -32,10 +32,9 @@ export class ConnectorService {
   async getConnectors(pageNumber: number = 1, pageSize: number = 5) {
     const connectors = await this.connectorRepository.getConnectors(pageNumber, pageSize);
     const totalConnectors = await this.connectorRepository.countTotalConnectors();
-    const totalPages = CommonPagination.countTotalPages(totalConnectors, pageSize);
 
     this.logger.log(`Returned list of '${connectors.length}' Connector. PageNumber '${pageNumber}', pageSize '${pageSize}'`);
-    return CommonPagination.paginate(connectors, new Pagination(pageNumber, pageSize, totalPages));
+    return CommonPagination.paginate(connectors, new Pagination(pageNumber, pageSize, totalConnectors));
   }
 
   async updateConnector(id: string, updateConnectorDto: UpdateConnectorDto) {
