@@ -5,6 +5,7 @@ import { ChargingStationTypeRepository } from 'src/charging-station-type/chargin
 import { CommonException } from 'src/common/common.exception';
 import { CommonPagination, Pagination } from 'src/common/common.pagination';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
+import { ConnectorRepository } from 'src/connector/connector.repository';
 
 @Injectable()
 export class ChargingStationService {
@@ -12,18 +13,21 @@ export class ChargingStationService {
 
     constructor(
         private readonly chargingStationRepository: ChargingStationRepository, 
-        private readonly chargingStationTypeRepository: ChargingStationTypeRepository
+        private readonly chargingStationTypeRepository: ChargingStationTypeRepository,
+        private readonly connectorRepository: ConnectorRepository
     ) {
         this.logger = new Logger(ChargingStationService.name);
     }
 
     async createChargingStation(createChargingStationDto: CreateChargingStationDto) {
+        this.validateConnectorIdsDifferent(createChargingStationDto.connectorIds);
         await this.validateNameConflict(createChargingStationDto.name);
         await this.validateDeviceIdConflict(createChargingStationDto.deviceId);
         await this.validateChargingStationTypeIdExists(createChargingStationDto.chargingStationTypeId);
-        
+        await this.validateConnectorIds(createChargingStationDto);
+
         const newChargingStation = await this.chargingStationRepository.createChargingStation(createChargingStationDto);
-        this.logger.log(`Created ChargingStation with id '${newChargingStation.id}'`);
+        this.logger.log(`Created ChargingStation with id '${newChargingStation}'`);
         return newChargingStation;
     }
 
@@ -96,6 +100,57 @@ export class ChargingStationService {
     private async validateChargingStationTypeIdExists(chargingStationTypeId: string) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeById(chargingStationTypeId) === null) {
             CommonException.notFoundException(this.logger, 'ChargingStationType', 'chargingStationTypeId', chargingStationTypeId);
+        }
+    }
+
+    private async validateConnectorIds(createChargingStationDto: CreateChargingStationDto) {
+        await this.validateConnectorIdsExists(createChargingStationDto.connectorIds);
+        await this.validateConnectorsPlugCount(createChargingStationDto.chargingStationTypeId, createChargingStationDto.connectorIds);
+        await this.validateConnectorsFree(createChargingStationDto.connectorIds);
+        await this.validateConnectorsPriority(createChargingStationDto.connectorIds);
+    }
+
+    private validateConnectorIdsDifferent(connectorIds: string[]) {
+        if (new Set(connectorIds).size !== connectorIds.length) {
+            CommonException.badRequestException(this.logger, 'ConnectorIds in request duplicated');
+        }
+    }
+
+    private async validateConnectorIdsExists(connectorIds: string[]) {
+        for (const id of connectorIds) {
+            if (await this.connectorRepository.getConnectorById(id) === null) {
+                CommonException.notFoundException(this.logger, 'Connector', 'id', id);
+            }
+        }
+    }
+
+    private async validateConnectorsPlugCount(chargingStationTypeId: string, connectorIds: string[]) {
+        const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(chargingStationTypeId);
+        const plugCount = chargingStationType?.plugCount;
+        if (connectorIds.length !== plugCount) {
+            CommonException.badRequestException(this.logger, `PlugCount size, which is '${plugCount}' not match connectorIds size`);
+        }
+    }
+
+    private async validateConnectorsFree(connectorIds: string[]) {
+        for (const connectorId of connectorIds) {
+            const connector = await this.connectorRepository.getConnectorById(connectorId);
+            if (connector?.chargingStationId !== null) {
+                CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is bound to different ChargingStation`);
+            }
+        }
+    }
+
+    private async validateConnectorsPriority(connectorIds: string[]) {
+        let priorityTrueCount = 0;
+        for (const connectorId of connectorIds) {
+            const connector = await this.connectorRepository.getConnectorById(connectorId);
+            if (connector?.priority === true) {
+                priorityTrueCount++;
+            }
+            if (priorityTrueCount > 1) {
+                CommonException.badRequestException(this.logger, 'Multiple connectors have priority set true');
+            }
         }
     }
 }

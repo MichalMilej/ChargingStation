@@ -8,8 +8,22 @@ export class ChargingStationRepository {
     constructor(private databaseService: DatabaseService) {}
 
     async createChargingStation(createChargingStationDto: CreateChargingStationDto) {
-        return this.databaseService.chargingStation.create({
-            data: createChargingStationDto
+        const {connectorIds, ...preparedCreateChargingStationDto} = createChargingStationDto;
+        return await this.databaseService.$transaction(async (databaseService) => {
+            const newChargingStation = await databaseService.chargingStation.create({
+                data: preparedCreateChargingStationDto
+            })
+            for (const connectorId of connectorIds) {
+                await databaseService.connector.update({
+                    where: {
+                        id: connectorId
+                    },
+                    data: {
+                        chargingStationId: newChargingStation.id
+                    }
+                })
+            }
+            return newChargingStation;
         });
     }
 

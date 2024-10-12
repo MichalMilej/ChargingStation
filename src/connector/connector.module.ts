@@ -6,5 +6,6 @@ import { ConnectorRepository } from './connector.repository';
 @Module({
   controllers: [ConnectorController],
   providers: [ConnectorService, ConnectorRepository],
+  exports: [ConnectorRepository]
 })
 export class ConnectorModule {}
