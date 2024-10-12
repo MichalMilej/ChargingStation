@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "src/common/database.service";
 import { CreateChargingStationTypeDto } from "./dto/create-charging-station-type.dto";
 import { UpdateChargingStationTypeDto } from "./dto/update-charging-station-type.dto";
+import { ChargingStationTypeFilterDto } from "./dto/charging-station-type.filter.dto";
 
 @Injectable()
 export class ChargingStationTypeRepository {
@@ -26,9 +27,14 @@ export class ChargingStationTypeRepository {
         });
     }
 
-    async getChargingStationTypes(pageNumber: number = 1, pageSize: number = 5) {
+    async getChargingStationTypes(pageNumber: number = 1, pageSize: number = 5, filterDto: ChargingStationTypeFilterDto) {
         const skip = (pageNumber-1) * pageSize;
         return this.databaseService.chargingStationType.findMany({
+            where: {
+                name: filterDto.name ? { contains: filterDto.name } : undefined,
+                plugCount: filterDto.plugCount ? { equals: filterDto.plugCount } : undefined,
+                currentType: filterDto.currentType ? { equals: filterDto.currentType } : undefined
+            },
             skip: skip,
             take: pageSize
         });

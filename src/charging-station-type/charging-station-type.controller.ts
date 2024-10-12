@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Patc
 import { ChargingStationTypeService } from './charging-station-type.service';
 import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
 import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
+import { ChargingStationTypeFilterDto } from './dto/charging-station-type.filter.dto';
 
 @Controller('charging-station-type')
 export class ChargingStationTypeController {
@@ -26,8 +27,9 @@ export class ChargingStationTypeController {
     @Get()
     getChargingStationTypes(
         @Query('pageNumber', ParseIntPipe) pageNumber: number, 
-        @Query('pageSize', ParseIntPipe) pageSize: number) {
-        return this.chargingStationTypeService.getChargingStationTypes(pageNumber, pageSize);
+        @Query('pageSize', ParseIntPipe) pageSize: number,
+        @Query() chargingStationTypeFilterDto: ChargingStationTypeFilterDto) {
+        return this.chargingStationTypeService.getChargingStationTypes(pageNumber, pageSize, chargingStationTypeFilterDto);
     }
 
     @Patch(':id')
