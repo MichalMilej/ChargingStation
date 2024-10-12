@@ -4,6 +4,7 @@ import { UpdateConnectorDto } from './dto/update-connector.dto';
 import { ConnectorRepository } from './connector.repository';
 import { CommonException } from 'src/common/common.exception';
 import { CommonPagination, Pagination } from 'src/common/common.pagination';
+import { ConnectorFilterDto } from './dto/connector.filter.dto';
 
 @Injectable()
 export class ConnectorService {
@@ -29,8 +30,8 @@ export class ConnectorService {
     return connector;
   }
 
-  async getConnectors(pageNumber: number = 1, pageSize: number = 5) {
-    const connectors = await this.connectorRepository.getConnectors(pageNumber, pageSize);
+  async getConnectors(pageNumber: number = 1, pageSize: number = 5, connectorFilterDto: ConnectorFilterDto) {
+    const connectors = await this.connectorRepository.getConnectors(pageNumber, pageSize, connectorFilterDto);
     const totalConnectors = await this.connectorRepository.countTotalConnectors();
 
     this.logger.log(`Returned list of '${connectors.length}' Connector. PageNumber '${pageNumber}', pageSize '${pageSize}'`);

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query,
 import { ConnectorService } from './connector.service';
 import { CreateConnectorDto } from './dto/create-connector.dto';
 import { UpdateConnectorDto } from './dto/update-connector.dto';
+import { ConnectorFilterDto } from './dto/connector.filter.dto';
 
 @Controller('connector')
 export class ConnectorController {
@@ -20,8 +21,9 @@ export class ConnectorController {
   @Get()
   getConnectors(
     @Query('pageNumber', ParseIntPipe) pageNumber: number, 
-    @Query('pageSize', ParseIntPipe) pageSize: number) {
-      return this.connectorService.getConnectors(pageNumber, pageSize);
+    @Query('pageSize', ParseIntPipe) pageSize: number,
+    @Query() connectorFilterDto: ConnectorFilterDto) {
+      return this.connectorService.getConnectors(pageNumber, pageSize, connectorFilterDto);
     }
 
   @Patch(':id')
