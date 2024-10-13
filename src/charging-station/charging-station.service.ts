@@ -22,11 +22,10 @@ export class ChargingStationService {
     }
 
     async createChargingStation(createChargingStationDto: CreateChargingStationDto) {
-        this.validateConnectorIdsDifferent(createChargingStationDto.connectorIds);
         await this.validateNameConflict(createChargingStationDto.name);
         await this.validateDeviceIdConflict(createChargingStationDto.deviceId);
         await this.validateChargingStationTypeIdExists(createChargingStationDto.chargingStationTypeId);
-        await this.validateConnectorIds(createChargingStationDto);
+        await this.validateConnectorIds(createChargingStationDto.connectorIds, createChargingStationDto.chargingStationTypeId);
 
         const newChargingStation = await this.chargingStationRepository.createChargingStation(createChargingStationDto);
         this.logger.log(`Created ChargingStation with id '${newChargingStation}'`);
@@ -79,11 +78,15 @@ export class ChargingStationService {
             await this.validateDeviceIdConflict(updateChargingStationDto.deviceId);
         }
         if (updateChargingStationDto.chargingStationTypeId !== undefined) {
+            if (updateChargingStationDto.connectorIds === undefined) {
+                return CommonException.badRequestException(this.logger, `ConnectorIds not specified`);
+            }
             await this.validateChargingStationTypeIdExists(updateChargingStationDto.chargingStationTypeId);
+            await this.validateConnectorIds(updateChargingStationDto.connectorIds, updateChargingStationDto.chargingStationTypeId, id);
         }
         const updatedChargingStation = await this.chargingStationRepository.updateChargingStation(id, updateChargingStationDto);
         this.logger.log(`Updated ChargingStation with id '${id}'`);('');
-        return updateChargingStationDto;
+        return updatedChargingStation;
     }
 
     async replaceConnector(connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {
@@ -127,11 +130,12 @@ export class ChargingStationService {
         }
     }
 
-    private async validateConnectorIds(createChargingStationDto: CreateChargingStationDto) {
-        await this.validateConnectorIdsExists(createChargingStationDto.connectorIds);
-        await this.validateConnectorsPlugCount(createChargingStationDto.chargingStationTypeId, createChargingStationDto.connectorIds);
-        await this.validateConnectorsFree(createChargingStationDto.connectorIds);
-        await this.validateConnectorsPriority(createChargingStationDto.connectorIds);
+    private async validateConnectorIds(connectorIds: string[], chargingStationTypeId: string, skipChargingStationWithId?: string) {
+        this.validateConnectorIdsDifferent(connectorIds);
+        await this.validateConnectorIdsExists(connectorIds);
+        await this.validateConnectorsPlugCount(chargingStationTypeId, connectorIds);
+        await this.validateConnectorsFree(connectorIds, skipChargingStationWithId);
+        await this.validateConnectorsPriority(connectorIds);
     }
 
     private validateConnectorIdsDifferent(connectorIds: string[]) {
@@ -156,10 +160,10 @@ export class ChargingStationService {
         }
     }
 
-    private async validateConnectorsFree(connectorIds: string[]) {
+    private async validateConnectorsFree(connectorIds: string[], skipChargingStationWithId?: string) {
         for (const connectorId of connectorIds) {
             const connector = await this.connectorRepository.getConnectorById(connectorId);
-            if (connector?.chargingStationId !== null) {
+            if (connector?.chargingStationId !== null && connector?.chargingStationId !== skipChargingStationWithId) {
                 CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is bound to different ChargingStation`);
             }
         }

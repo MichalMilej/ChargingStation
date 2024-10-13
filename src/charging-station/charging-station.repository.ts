@@ -62,10 +62,34 @@ export class ChargingStationRepository {
     }
 
     async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
-        return this.databaseService.chargingStation.update({
-            where: { id },
-            data: updateChargingStationDto
-        })
+        if (updateChargingStationDto.chargingStationTypeId === undefined) {
+            return this.databaseService.chargingStation.update({
+                where: { id },
+                data: updateChargingStationDto
+            });
+        }
+        return await this.databaseService.$transaction(async (databaseService) => {
+            await databaseService.connector.updateMany({
+                where: { chargingStationId: id },
+                data: { chargingStationId: null }
+            });
+            const {connectorIds, ...preparedUpdateChargingStationDto} = updateChargingStationDto;
+            const updatedChargingStation = await databaseService.chargingStation.update({
+                where: { id: id },
+                data: preparedUpdateChargingStationDto
+            })
+            for (const connectorId of connectorIds) {
+                await databaseService.connector.update({
+                    where: {
+                        id: connectorId
+                    },
+                    data: {
+                        chargingStationId: id
+                    }
+                })
+            }
+            return updatedChargingStation;
+        });
     }
 
     async replaceConnector(chargingStationId: string, connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {

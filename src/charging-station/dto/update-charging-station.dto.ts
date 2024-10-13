@@ -1,4 +1,4 @@
-import { IsIP, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsIP, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class UpdateChargingStationDto {
     
@@ -23,4 +23,9 @@ export class UpdateChargingStationDto {
     @IsOptional()
     @IsUUID()
     readonly chargingStationTypeId: string;
+
+    @IsOptional()
+    @IsArray()
+    @IsUUID("all", {each: true})
+    readonly connectorIds: string[];
 }
