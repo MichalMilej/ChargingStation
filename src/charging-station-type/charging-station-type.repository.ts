@@ -40,6 +40,12 @@ export class ChargingStationTypeRepository {
         });
     }
 
+    async countChargingStationsWithChargingStationType(chargingStationTypeId: string) {
+        return this.databaseService.chargingStation.count({
+            where: { chargingStationTypeId: chargingStationTypeId }
+        });
+    }
+
     async countTotalChargingStationTypes() {
         return this.databaseService.chargingStationType.count();
     }

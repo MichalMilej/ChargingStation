@@ -57,6 +57,9 @@ export class ChargingStationTypeService {
         if (updateChargingStationTypeDto.name !== undefined) {
             await this.validateNameConflict(updateChargingStationTypeDto.name);
         }
+        if (updateChargingStationTypeDto.plugCount !== undefined) {
+            await this.validateChargingStationsNotBound(id);
+        }
         const chargingStationType = await this.chargingStationTypeRepository.updateChargingStationType(id, updateChargingStationTypeDto);
         this.logger.log(`Updated ChargingStationType with id '${chargingStationType.id}'`);
         return chargingStationType;
@@ -69,6 +72,12 @@ export class ChargingStationTypeService {
     private async validateNameConflict(name: string) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeByName(name) !== null) {
             CommonException.alreadyInDatabaseException(this.logger, 'ChargingStationType', 'name', name);
+        }
+    }
+
+    private async validateChargingStationsNotBound(chargingStationTypeId: string) {
+        if (await this.chargingStationTypeRepository.countChargingStationsWithChargingStationType(chargingStationTypeId) > 0) {
+            CommonException.conflictException(this.logger, `ChargingStationType is bound to ChargingStation instances`);
         }
     }
 }
