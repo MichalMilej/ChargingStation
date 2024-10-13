@@ -51,6 +51,7 @@ export class ConnectorService {
       throw CommonException.conflictException(this.logger, `Connector with id '${id}' bound to ChargingStation with id '${connector.chargingStationId}'`);
     }
     await this.connectorRepository.deleteConnector(id);
+    this.logger.log(`Deleted Connector with id '${id}'`);
   }
 
   async validateConnectorsPriority(chargingStationId: string) {

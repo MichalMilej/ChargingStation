@@ -25,10 +25,7 @@ export class ChargingStationTypeService {
     }
 
     async getChargingStationTypeById(id: string) {
-        const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(id);
-        if (chargingStationType === null) {
-            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
-        }
+        const chargingStationType = await this.retrieveChargingStationTypeById(id);
         this.logger.log(`Returned ChargingStationType with id '${id}'`);
         return chargingStationType;
     }
@@ -51,9 +48,7 @@ export class ChargingStationTypeService {
     }
 
     async updateChargingStationType(id: string, updateChargingStationTypeDto: UpdateChargingStationTypeDto) {
-        if (await this.chargingStationTypeRepository.getChargingStationTypeById(id) === null) {
-            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
-        }
+        await this.retrieveChargingStationTypeById(id);
         if (updateChargingStationTypeDto.name !== undefined) {
             await this.validateNameConflict(updateChargingStationTypeDto.name);
         }
@@ -66,7 +61,18 @@ export class ChargingStationTypeService {
     }
 
     async deleteChargingStationType(id: string) {
-        
+        await this.retrieveChargingStationTypeById(id);
+        await this.validateChargingStationsNotBound(id);
+        await this.chargingStationTypeRepository.deleteChargingStationType(id);
+        this.logger.log(`Deleted ChargingStationType with id '${id}'`);
+    }
+
+    private async retrieveChargingStationTypeById(id: string) {
+        const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(id);
+        if (chargingStationType === null) {
+            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
+        }
+        return chargingStationType;
     }
 
     private async validateNameConflict(name: string) {

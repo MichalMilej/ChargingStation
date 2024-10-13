@@ -56,4 +56,10 @@ export class ChargingStationTypeRepository {
             data: updateChargingStationTypeDto
         });
     }
+
+    async deleteChargingStationType(id: string) {
+        return this.databaseService.chargingStationType.delete({
+            where: { id }
+        });
+    }
 }

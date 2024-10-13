@@ -76,7 +76,7 @@ export class ChargingStationService {
         }
         if (updateChargingStationDto.chargingStationTypeId !== undefined) {
             if (updateChargingStationDto.connectorIds === undefined) {
-                return CommonException.badRequestException(this.logger, `ConnectorIds not specified`);
+                throw CommonException.badRequestException(this.logger, `ConnectorIds not specified`);
             }
             await this.validateChargingStationTypeIdExists(updateChargingStationDto.chargingStationTypeId);
             await this.validateConnectorIds(updateChargingStationDto.connectorIds, updateChargingStationDto.chargingStationTypeId, id);
@@ -106,11 +106,11 @@ export class ChargingStationService {
     async deleteChargingStation(id: string) {
         await this.retrieveChargingStationById(id);
         await this.chargingStationRepository.deleteChargingStation(id);
+        this.logger.log(`Deleted ChargingStation with id '${id}'`);
     }
 
     private async retrieveChargingStationById(id: string) {
         const chargingStation = await this.chargingStationRepository.getChargingStationById(id);
-        console.log(chargingStation)
         if (chargingStation === null) {
             throw CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
         }
