@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "src/common/database.service";
 import { CreateConnectorDto } from "./dto/create-connector.dto";
 import { ConnectorQueryDto } from "./dto/connector.query.dto";
+import { UpdateConnectorDto } from "./dto/update-connector.dto";
 
 @Injectable()
 export class ConnectorRepository {
@@ -33,7 +34,20 @@ export class ConnectorRepository {
         });
     }
 
+    async getConnectorsByChargingStationId(chargingStationId: string) {
+        return this.databaseService.connector.findMany({
+            where: { chargingStationId: chargingStationId }
+        });
+    }
+
     async countTotalConnectors() {
         return this.databaseService.connector.count();
+    }
+
+    async updateConnector(id: string, updateConnectorDto: UpdateConnectorDto) {
+        return this.databaseService.connector.update({
+            where: { id },
+            data: updateConnectorDto
+        });
     }
 }

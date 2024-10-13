@@ -7,7 +7,7 @@ export class CommonException {
         throw new NotFoundException(message);
     }
 
-    static conflictException(logger: Logger, entity: string, param: string, value: any) {
+    static alreadyInDatabaseException(logger: Logger, entity: string, param: string, value: any) {
         const message = `${entity} with ${param} '${value}' already exists in database`;
         logger.log(message);
         throw new ConflictException(message);

@@ -62,8 +62,8 @@ export class ChargingStationRepository {
 
     async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
         return this.databaseService.chargingStation.update({
-            data: updateChargingStationDto,
-            where: {id}
+            where: { id },
+            data: updateChargingStationDto
         })
     }
 

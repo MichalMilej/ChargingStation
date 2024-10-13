@@ -68,7 +68,7 @@ export class ChargingStationTypeService {
 
     private async validateNameConflict(name: string) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeByName(name) !== null) {
-            CommonException.conflictException(this.logger, 'ChargingStationType', 'name', name);
+            CommonException.alreadyInDatabaseException(this.logger, 'ChargingStationType', 'name', name);
         }
     }
 }

@@ -87,13 +87,13 @@ export class ChargingStationService {
 
     private async validateNameConflict(name: string) {
         if (await this.chargingStationRepository.getChargingStationByName(name) !== null) {
-            CommonException.conflictException(this.logger, 'ChargingStation', 'name', name);
+            CommonException.alreadyInDatabaseException(this.logger, 'ChargingStation', 'name', name);
         }
     }
 
     private async validateDeviceIdConflict(deviceId: string) {
         if (await this.chargingStationRepository.getChargingStationByDeviceId(deviceId) !== null) {
-            CommonException.conflictException(this.logger, "ChargingStation", 'deviceId', deviceId);
+            CommonException.alreadyInDatabaseException(this.logger, "ChargingStation", 'deviceId', deviceId);
         }
     }
 
