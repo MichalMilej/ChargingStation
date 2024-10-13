@@ -3,6 +3,7 @@ import { DatabaseService } from "src/common/database.service";
 import { CreateChargingStationDto } from "./dto/create-charging-station.dto";
 import { UpdateChargingStationDto } from "./dto/update-charging-station.dto";
 import { ChargingStationQueryDto } from "./dto/charging-station.query.dto";
+import { ReplaceConnectorDto } from "./dto/replace-connector.dto";
 
 @Injectable()
 export class ChargingStationRepository {
@@ -65,6 +66,20 @@ export class ChargingStationRepository {
             where: { id },
             data: updateChargingStationDto
         })
+    }
+
+    async replaceConnector(chargingStationId: string, connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {
+        return this.databaseService.$transaction(async (databaseService) => {
+            const oldConnector = await databaseService.connector.update({
+                where: { id: connectorId },
+                data: { chargingStationId: null }
+            });
+            const newConnector = await databaseService.connector.update({
+                where: { id: replaceConnectorDto.newConnectorId },
+                data: { chargingStationId: chargingStationId }
+            });
+            return { oldConnector, newConnector };
+        });
     }
 
     async countTotalChargingStations() {

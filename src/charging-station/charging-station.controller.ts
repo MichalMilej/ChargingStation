@@ -3,7 +3,7 @@ import { ChargingStationService } from './charging-station.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStationQueryDto } from './dto/charging-station.query.dto';
-import { PaginationDto } from 'src/common/pagination.dto';
+import { ReplaceConnectorDto } from './dto/replace-connector.dto';
 
 @Controller('charging-station')
 export class ChargingStationController {
@@ -38,5 +38,10 @@ export class ChargingStationController {
   @Patch(':id')
   updateChargingStation(@Param('id', ParseUUIDPipe) id: string, @Body() updateChargingStationDto: UpdateChargingStationDto) {
     return this.chargingStationService.updateChargingStation(id, updateChargingStationDto);
+  }
+
+  @Patch('connector/:connectorId')
+  replaceConnector(@Param('connectorId', ParseUUIDPipe) connectorId: string, @Body() replaceConnectorDto: ReplaceConnectorDto) {
+    return this.chargingStationService.replaceConnector(connectorId, replaceConnectorDto);
   }
 }

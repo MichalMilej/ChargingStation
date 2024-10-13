@@ -7,6 +7,7 @@ import { CommonPagination, Pagination } from 'src/common/common.pagination';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ConnectorRepository } from 'src/connector/connector.repository';
 import { ChargingStationQueryDto } from './dto/charging-station.query.dto';
+import { ReplaceConnectorDto } from './dto/replace-connector.dto';
 
 @Injectable()
 export class ChargingStationService {
@@ -85,6 +86,29 @@ export class ChargingStationService {
         return updateChargingStationDto;
     }
 
+    async replaceConnector(connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {
+        const oldConnector = await this.connectorRepository.getConnectorById(connectorId);
+        if (oldConnector === null) {
+            return CommonException.notFoundException(this.logger, 'Connector', 'id', connectorId);
+        }
+        if (oldConnector.chargingStationId === null) {
+            return CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is not bound to ChargingStation'`);
+        }
+        const newConnector = await this.connectorRepository.getConnectorById(replaceConnectorDto.newConnectorId);
+        if (newConnector === null) {
+            return CommonException.notFoundException(this.logger, 'Connector', 'id', replaceConnectorDto.newConnectorId);
+        }
+        if (newConnector.chargingStationId !== null) {
+            return CommonException.conflictException(this.logger, `Connector '${replaceConnectorDto.newConnectorId}' is bound to different ChargingStation`);
+        }
+        if (newConnector.priority === true) {
+            await this.validateConnectorsPriorityToReplaceConnector(oldConnector.chargingStationId, oldConnector.id);
+        }
+        const result = await this.chargingStationRepository.replaceConnector(oldConnector.chargingStationId, connectorId, replaceConnectorDto);
+        this.logger.log(`Replaced connector with id '${connectorId}' with connector with id '${replaceConnectorDto.newConnectorId}' in ChargingStation`);
+        return result;
+    }
+
     private async validateNameConflict(name: string) {
         if (await this.chargingStationRepository.getChargingStationByName(name) !== null) {
             CommonException.alreadyInDatabaseException(this.logger, 'ChargingStation', 'name', name);
@@ -152,5 +176,17 @@ export class ChargingStationService {
                 CommonException.badRequestException(this.logger, 'Multiple connectors have priority set true');
             }
         }
+    }
+
+    private async validateConnectorsPriorityToReplaceConnector(chargingStationId: string, oldConnectorId: string) {
+        const chargingStationConnectors = await this.connectorRepository.getConnectorsByChargingStationId(chargingStationId);
+            for (const connector of chargingStationConnectors) {
+                if (connector.id === oldConnectorId) {
+                    continue;
+                }
+                if (connector.priority === true) {
+                    return CommonException.badRequestException(this.logger, 'Multiple connectors would have priority set true');
+                }
+            }
     }
 }

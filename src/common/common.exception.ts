@@ -13,6 +13,11 @@ export class CommonException {
         throw new ConflictException(message);
     }
 
+    static conflictException(logger: Logger, message: string) {
+        logger.log(message);
+        throw new ConflictException(message);
+    }
+
     static badRequestException(logger: Logger, message: string) {
         logger.log(message);
         throw new BadRequestException(message);
