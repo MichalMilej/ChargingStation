@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, HttpCode } from '@nestjs/common';
 import { ConnectorService } from './connector.service';
 import { CreateConnectorDto } from './dto/create-connector.dto';
 import { UpdateConnectorDto } from './dto/update-connector.dto';
@@ -29,7 +29,8 @@ export class ConnectorController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   deleteConnector(@Param('id', ParseUUIDPipe) id: string) {
-    
+    return this.connectorService.deleteConnector(id);
   }
 }

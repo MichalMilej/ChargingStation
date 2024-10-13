@@ -50,4 +50,10 @@ export class ConnectorRepository {
             data: updateConnectorDto
         });
     }
+
+    async deleteConnector(id: string) {
+        this.databaseService.connector.delete({
+            where: { id }
+        });
+    }
 }

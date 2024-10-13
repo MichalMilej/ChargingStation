@@ -27,7 +27,7 @@ export class ChargingStationTypeService {
     async getChargingStationTypeById(id: string) {
         const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(id);
         if (chargingStationType === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
+            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
         }
         this.logger.log(`Returned ChargingStationType with id '${id}'`);
         return chargingStationType;
@@ -36,7 +36,7 @@ export class ChargingStationTypeService {
     async getChargingStationTypeByName(name: string) {
         const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeByName(name);
         if (chargingStationType === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStationType', 'name', name);
+            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'name', name);
         }
         this.logger.log(`Returned ChargingStationType with name '${name}'`);
         return chargingStationType;
@@ -52,7 +52,7 @@ export class ChargingStationTypeService {
 
     async updateChargingStationType(id: string, updateChargingStationTypeDto: UpdateChargingStationTypeDto) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeById(id) === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
+            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'id', id);
         }
         if (updateChargingStationTypeDto.name !== undefined) {
             await this.validateNameConflict(updateChargingStationTypeDto.name);
@@ -71,13 +71,13 @@ export class ChargingStationTypeService {
 
     private async validateNameConflict(name: string) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeByName(name) !== null) {
-            CommonException.alreadyInDatabaseException(this.logger, 'ChargingStationType', 'name', name);
+            throw CommonException.alreadyInDatabaseException(this.logger, 'ChargingStationType', 'name', name);
         }
     }
 
     private async validateChargingStationsNotBound(chargingStationTypeId: string) {
         if (await this.chargingStationTypeRepository.countChargingStationsWithChargingStationType(chargingStationTypeId) > 0) {
-            CommonException.conflictException(this.logger, `ChargingStationType is bound to ChargingStation instances`);
+            throw CommonException.conflictException(this.logger, `ChargingStationType is bound to ChargingStation instances`);
         }
     }
 }

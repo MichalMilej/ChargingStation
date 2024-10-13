@@ -5,7 +5,6 @@ import { ConnectorRepository } from './connector.repository';
 import { CommonException } from 'src/common/common.exception';
 import { CommonPagination, Pagination } from 'src/common/common.pagination';
 import { ConnectorQueryDto } from './dto/connector.query.dto';
-import { ChargingStationRepository } from 'src/charging-station/charging-station.repository';
 
 @Injectable()
 export class ConnectorService {
@@ -23,10 +22,7 @@ export class ConnectorService {
   }
 
   async getConnectorById(id: string) {
-    const connector = await this.connectorRepository.getConnectorById(id);
-    if (connector === null) {
-      CommonException.notFoundException(this.logger, 'Connector', 'id', id);
-    }
+    const connector = await this.retrieveConnectorById(id);
     this.logger.log(`Returned Connector with id '${id}'`);
     return connector;
   }
@@ -40,16 +36,21 @@ export class ConnectorService {
   }
 
   async updateConnector(id: string, updateConnectorDto: UpdateConnectorDto) {
-    const connector = await this.connectorRepository.getConnectorById(id);
-    if (connector === null) {
-      return CommonException.notFoundException(this.logger, 'Connector', 'id', id);
-    }
+    const connector = await this.retrieveConnectorById(id);
     if (updateConnectorDto.priority !== false && connector.chargingStationId !== null) {
       await this.validateConnectorsPriority(connector.chargingStationId);
     }
     const updatedConnector = await this.connectorRepository.updateConnector(id, updateConnectorDto);
     this.logger.log(`Updated connector with id '${id}'`);
     return updatedConnector;
+  }
+
+  async deleteConnector(id: string) {
+    const connector = await this.retrieveConnectorById(id);
+    if (connector.chargingStationId !== null) {
+      throw CommonException.conflictException(this.logger, `Connector with id '${id}' bound to ChargingStation with id '${connector.chargingStationId}'`);
+    }
+    await this.connectorRepository.deleteConnector(id);
   }
 
   async validateConnectorsPriority(chargingStationId: string) {
@@ -61,5 +62,13 @@ export class ConnectorService {
         throw new ConflictException(message);
       }
     }
+  }
+
+  private async retrieveConnectorById(id: string) {
+    const connector = await this.connectorRepository.getConnectorById(id);
+    if (connector === null) {
+      throw CommonException.notFoundException(this.logger, 'Connector', 'id', id);
+    }
+    return connector;
   }
 }

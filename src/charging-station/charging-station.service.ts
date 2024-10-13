@@ -35,7 +35,7 @@ export class ChargingStationService {
     async getChargingStationById(id: string) {
         const chargingStation = await this.chargingStationRepository.getChargingStationById(id);
         if (chargingStation === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
+            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
         }
         this.logger.log(`Returned ChargingStation with id '${id}'`);
         return chargingStation;
@@ -44,7 +44,7 @@ export class ChargingStationService {
     async getChargingStationByName(name: string) {
         const chargingStation = await this.chargingStationRepository.getChargingStationByName(name);
         if (chargingStation === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStation', 'name', name);
+            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'name', name);
         }
         this.logger.log(`Returned ChargingStation with name '${name}'`);
         return chargingStation;
@@ -53,7 +53,7 @@ export class ChargingStationService {
     async getChargingStationByDeviceId(deviceId: string) {
         const chargingStation = await this.chargingStationRepository.getChargingStationByDeviceId(deviceId);
         if (chargingStation === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStation', 'deviceId', deviceId);
+            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'deviceId', deviceId);
         }
         this.logger.log(`Returned ChargingStation with deviceId '${deviceId}'`);
         return chargingStation;
@@ -92,17 +92,17 @@ export class ChargingStationService {
     async replaceConnector(connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {
         const oldConnector = await this.connectorRepository.getConnectorById(connectorId);
         if (oldConnector === null) {
-            return CommonException.notFoundException(this.logger, 'Connector', 'id', connectorId);
+            throw CommonException.notFoundException(this.logger, 'Connector', 'id', connectorId);
         }
         if (oldConnector.chargingStationId === null) {
-            return CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is not bound to ChargingStation'`);
+            throw CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is not bound to ChargingStation'`);
         }
         const newConnector = await this.connectorRepository.getConnectorById(replaceConnectorDto.newConnectorId);
         if (newConnector === null) {
-            return CommonException.notFoundException(this.logger, 'Connector', 'id', replaceConnectorDto.newConnectorId);
+            throw CommonException.notFoundException(this.logger, 'Connector', 'id', replaceConnectorDto.newConnectorId);
         }
         if (newConnector.chargingStationId !== null) {
-            return CommonException.conflictException(this.logger, `Connector '${replaceConnectorDto.newConnectorId}' is bound to different ChargingStation`);
+            throw CommonException.conflictException(this.logger, `Connector '${replaceConnectorDto.newConnectorId}' is bound to different ChargingStation`);
         }
         if (newConnector.priority === true) {
             await this.validateConnectorsPriorityToReplaceConnector(oldConnector.chargingStationId, oldConnector.id);
@@ -114,19 +114,19 @@ export class ChargingStationService {
 
     private async validateNameConflict(name: string) {
         if (await this.chargingStationRepository.getChargingStationByName(name) !== null) {
-            CommonException.alreadyInDatabaseException(this.logger, 'ChargingStation', 'name', name);
+            throw CommonException.alreadyInDatabaseException(this.logger, 'ChargingStation', 'name', name);
         }
     }
 
     private async validateDeviceIdConflict(deviceId: string) {
         if (await this.chargingStationRepository.getChargingStationByDeviceId(deviceId) !== null) {
-            CommonException.alreadyInDatabaseException(this.logger, "ChargingStation", 'deviceId', deviceId);
+            throw CommonException.alreadyInDatabaseException(this.logger, "ChargingStation", 'deviceId', deviceId);
         }
     }
 
     private async validateChargingStationTypeIdExists(chargingStationTypeId: string) {
         if (await this.chargingStationTypeRepository.getChargingStationTypeById(chargingStationTypeId) === null) {
-            CommonException.notFoundException(this.logger, 'ChargingStationType', 'chargingStationTypeId', chargingStationTypeId);
+            throw CommonException.notFoundException(this.logger, 'ChargingStationType', 'chargingStationTypeId', chargingStationTypeId);
         }
     }
 
@@ -140,14 +140,14 @@ export class ChargingStationService {
 
     private validateConnectorIdsDifferent(connectorIds: string[]) {
         if (new Set(connectorIds).size !== connectorIds.length) {
-            CommonException.badRequestException(this.logger, 'ConnectorIds in request duplicated');
+            throw CommonException.badRequestException(this.logger, 'ConnectorIds in request duplicated');
         }
     }
 
     private async validateConnectorIdsExists(connectorIds: string[]) {
         for (const id of connectorIds) {
             if (await this.connectorRepository.getConnectorById(id) === null) {
-                CommonException.notFoundException(this.logger, 'Connector', 'id', id);
+                throw CommonException.notFoundException(this.logger, 'Connector', 'id', id);
             }
         }
     }
@@ -156,7 +156,7 @@ export class ChargingStationService {
         const chargingStationType = await this.chargingStationTypeRepository.getChargingStationTypeById(chargingStationTypeId);
         const plugCount = chargingStationType?.plugCount;
         if (connectorIds.length !== plugCount) {
-            CommonException.badRequestException(this.logger, `PlugCount size, which is '${plugCount}' not match connectorIds size`);
+            throw CommonException.badRequestException(this.logger, `PlugCount size, which is '${plugCount}' not match connectorIds size`);
         }
     }
 
@@ -164,7 +164,7 @@ export class ChargingStationService {
         for (const connectorId of connectorIds) {
             const connector = await this.connectorRepository.getConnectorById(connectorId);
             if (connector?.chargingStationId !== null && connector?.chargingStationId !== skipChargingStationWithId) {
-                CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is bound to different ChargingStation`);
+                throw CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is bound to different ChargingStation`);
             }
         }
     }
@@ -177,7 +177,7 @@ export class ChargingStationService {
                 priorityTrueCount++;
             }
             if (priorityTrueCount > 1) {
-                CommonException.badRequestException(this.logger, 'Multiple connectors have priority set true');
+                throw CommonException.badRequestException(this.logger, 'Multiple connectors have priority set true');
             }
         }
     }
@@ -189,7 +189,7 @@ export class ChargingStationService {
                     continue;
                 }
                 if (connector.priority === true) {
-                    return CommonException.badRequestException(this.logger, 'Multiple connectors would have priority set true');
+                    throw CommonException.badRequestException(this.logger, 'Multiple connectors would have priority set true');
                 }
             }
     }
