@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ChargingStationService } from './charging-station.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
@@ -44,4 +44,11 @@ export class ChargingStationController {
   replaceConnector(@Param('connectorId', ParseUUIDPipe) connectorId: string, @Body() replaceConnectorDto: ReplaceConnectorDto) {
     return this.chargingStationService.replaceConnector(connectorId, replaceConnectorDto);
   }
+
+  @Delete(':id')
+  @HttpCode(204)
+  deleteChargingStation(@Param('id', ParseUUIDPipe) id: string) {
+    return this.chargingStationService.deleteChargingStation(id);
+  }
+
 }

@@ -31,6 +31,6 @@ export class ConnectorController {
   @Delete(':id')
   @HttpCode(204)
   deleteConnector(@Param('id', ParseUUIDPipe) id: string) {
-    return this.connectorService.deleteConnector(id);
+    this.connectorService.deleteConnector(id);
   }
 }

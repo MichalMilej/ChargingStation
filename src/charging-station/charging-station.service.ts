@@ -33,10 +33,7 @@ export class ChargingStationService {
     }
 
     async getChargingStationById(id: string) {
-        const chargingStation = await this.chargingStationRepository.getChargingStationById(id);
-        if (chargingStation === null) {
-            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
-        }
+        const chargingStation = await this.retrieveChargingStationById(id);
         this.logger.log(`Returned ChargingStation with id '${id}'`);
         return chargingStation;
     }
@@ -90,17 +87,11 @@ export class ChargingStationService {
     }
 
     async replaceConnector(connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {
-        const oldConnector = await this.connectorRepository.getConnectorById(connectorId);
-        if (oldConnector === null) {
-            throw CommonException.notFoundException(this.logger, 'Connector', 'id', connectorId);
-        }
+        const oldConnector = await this.retrieveConnectorById(connectorId);
         if (oldConnector.chargingStationId === null) {
             throw CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is not bound to ChargingStation'`);
         }
-        const newConnector = await this.connectorRepository.getConnectorById(replaceConnectorDto.newConnectorId);
-        if (newConnector === null) {
-            throw CommonException.notFoundException(this.logger, 'Connector', 'id', replaceConnectorDto.newConnectorId);
-        }
+        const newConnector = await this.retrieveConnectorById(replaceConnectorDto.newConnectorId);
         if (newConnector.chargingStationId !== null) {
             throw CommonException.conflictException(this.logger, `Connector '${replaceConnectorDto.newConnectorId}' is bound to different ChargingStation`);
         }
@@ -110,6 +101,28 @@ export class ChargingStationService {
         const result = await this.chargingStationRepository.replaceConnector(oldConnector.chargingStationId, connectorId, replaceConnectorDto);
         this.logger.log(`Replaced connector with id '${connectorId}' with connector with id '${replaceConnectorDto.newConnectorId}' in ChargingStation`);
         return result;
+    }
+
+    async deleteChargingStation(id: string) {
+        await this.retrieveChargingStationById(id);
+        await this.chargingStationRepository.deleteChargingStation(id);
+    }
+
+    private async retrieveChargingStationById(id: string) {
+        const chargingStation = await this.chargingStationRepository.getChargingStationById(id);
+        console.log(chargingStation)
+        if (chargingStation === null) {
+            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
+        }
+        return chargingStation;
+    }
+
+    private async retrieveConnectorById(id: string) {
+        const connector = await this.connectorRepository.getConnectorById(id);
+        if (connector === null) {
+            throw CommonException.notFoundException(this.logger, 'Connector', 'id', id);
+        }
+        return connector;
     }
 
     private async validateNameConflict(name: string) {

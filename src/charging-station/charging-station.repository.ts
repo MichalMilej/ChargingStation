@@ -106,6 +106,18 @@ export class ChargingStationRepository {
         });
     }
 
+    async deleteChargingStation(id: string) {
+        await this.databaseService.$transaction(async (databaseService) => {
+            await databaseService.connector.updateMany({
+                where: { chargingStationId: id },
+                data: { chargingStationId: null }
+            })
+            await databaseService.chargingStation.delete({
+                where: { id }
+            })
+        })
+    }
+
     async countTotalChargingStations() {
         return this.databaseService.chargingStation.count();
     }
