@@ -4,11 +4,23 @@ services:
   db:
     image: postgres:17.0
     container_name: postgres
-    restart: always
     ports:
-      - '5432:5432'
+      - '${DB_PORT}:5432'
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: green-energy
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: always
+    
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: charging-station-app
+    ports:
+      - '${APP_PORT}:3000'
     volumes:
-      - ./dataset:/docker-entrypoint-initdb.d
+      - ./src:/app/src
+    depends_on:
+      - db
+
+    restart: always
