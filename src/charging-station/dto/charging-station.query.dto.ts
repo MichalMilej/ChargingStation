@@ -5,17 +5,17 @@ export class ChargingStationQueryDto extends PaginationDto {
    
     @IsOptional()
     @IsNotEmpty()
-    name: string;
+    name?: string;
 
     @IsOptional()
     @IsNotEmpty()
-    ipAddress: string;
+    ipAddress?: string;
 
     @IsOptional()
     @IsNotEmpty()
-    firmwareVersion: string;
+    firmwareVersion?: string;
 
     @IsOptional()
     @IsUUID()
-    chargingStationTypeId: string;
+    chargingStationTypeId?: string;
 }

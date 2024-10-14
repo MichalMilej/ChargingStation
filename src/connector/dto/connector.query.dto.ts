@@ -7,7 +7,7 @@ export class ConnectorQueryDto extends PaginationDto {
 
     @IsOptional()
     @IsNotEmpty()
-    readonly name: string;
+    readonly name?: string;
 
     @IsOptional()
     @Transform(priority => {
@@ -18,9 +18,9 @@ export class ConnectorQueryDto extends PaginationDto {
         return value === 'true' ? true : false;
     })
     
-    readonly priority: boolean;
+    readonly priority?: boolean;
 
     @IsOptional()
     @IsUUID()
-    readonly chargingStationId: string;
+    readonly chargingStationId?: string;
 }

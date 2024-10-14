@@ -5,9 +5,9 @@ export class UpdateConnectorDto {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    readonly name: string;
+    readonly name?: string;
 
     @IsOptional()
     @IsBoolean()
-    readonly priority: boolean;
+    readonly priority?: boolean;
 }

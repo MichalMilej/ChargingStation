@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ChargingStationService } from './charging-station.service';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
 import { ChargingStationQueryDto } from './dto/charging-station.query.dto';
 import { ReplaceConnectorDto } from './dto/replace-connector.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('charging-station')
 export class ChargingStationController {
   constructor(private readonly chargingStationService: ChargingStationService) {}

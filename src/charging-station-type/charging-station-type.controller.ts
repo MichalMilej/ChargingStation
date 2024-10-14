@@ -3,7 +3,9 @@ import { ChargingStationTypeService } from './charging-station-type.service';
 import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
 import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
 import { ChargingStationTypeQueryDto } from './dto/charging-station-type.query.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('charging-station-type')
 export class ChargingStationTypeController {
 

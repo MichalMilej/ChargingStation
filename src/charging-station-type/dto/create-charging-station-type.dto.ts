@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { CurrentType } from "@prisma/client";
 import { IsEnum, IsInt, IsNotEmpty, IsPositive, IsString } from "class-validator";
 
@@ -13,6 +14,7 @@ export class CreateChargingStationTypeDto {
     @IsPositive()
     readonly efficiency: number;
 
+    @ApiProperty({ enum: ['AC', 'DC'] })
     @IsEnum(CurrentType)
     readonly currentType: CurrentType;
 }
