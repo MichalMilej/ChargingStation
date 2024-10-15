@@ -17,10 +17,10 @@ services:
       dockerfile: Dockerfile
     container_name: charging-station-app
     ports:
-      - '${APP_PORT}:3000'
-    volumes:
-      - ./src:/app/src
+      - '${APP_PORT}:${APP_PORT}'
     depends_on:
       - db
-
+    volumes:
+      - .:/app
     restart: always
+    profiles: [full_docker]

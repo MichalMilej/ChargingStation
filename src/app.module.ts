@@ -4,9 +4,14 @@ import { ChargingStationTypeModule } from './charging-station-type/charging-stat
 import { ChargingStationModule } from './charging-station/charging-station.module';
 import { ConnectorModule } from './connector/connector.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [CommonModule, ChargingStationTypeModule, ChargingStationModule, ConnectorModule, AuthModule],
+  imports: [CommonModule, ChargingStationTypeModule, ChargingStationModule, ConnectorModule, AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+  ],
   controllers: [],
   providers: [],
 })
