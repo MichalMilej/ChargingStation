@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { DatabaseService } from "src/common/database.service";
 import { CreateConnectorDto } from "./dto/create-connector.dto";
 import { ConnectorQueryDto } from "./dto/connector.query.dto";
 import { UpdateConnectorDto } from "./dto/update-connector.dto";
+import { DatabaseService } from "../common/database.service";
 
 @Injectable()
 export class ConnectorRepository {

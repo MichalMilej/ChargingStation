@@ -6,7 +6,7 @@ import { ChargingStationTypeQueryDto } from './dto/charging-station-type.query.d
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
-@Controller('charging-station-type')
+@Controller('charging-station-types')
 export class ChargingStationTypeController {
 
     constructor(private readonly chargingStationTypeService: ChargingStationTypeService) {}

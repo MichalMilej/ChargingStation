@@ -6,7 +6,7 @@ import { ConnectorQueryDto } from './dto/connector.query.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
-@Controller('connector')
+@Controller('connectors')
 export class ConnectorController {
   constructor(private readonly connectorService: ConnectorService) {}
 

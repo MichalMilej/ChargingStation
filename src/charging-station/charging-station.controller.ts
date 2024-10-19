@@ -7,7 +7,7 @@ import { ReplaceConnectorDto } from './dto/replace-connector.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
-@Controller('charging-station')
+@Controller('charging-stations')
 export class ChargingStationController {
   constructor(private readonly chargingStationService: ChargingStationService) {}
 

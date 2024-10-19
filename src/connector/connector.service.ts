@@ -2,8 +2,8 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CreateConnectorDto } from './dto/create-connector.dto';
 import { UpdateConnectorDto } from './dto/update-connector.dto';
 import { ConnectorRepository } from './connector.repository';
-import { CommonException } from 'src/common/common.exception';
-import { CommonPagination, Pagination } from 'src/common/common.pagination';
+import { CommonException } from '../common/common.exception';
+import { CommonPagination, Pagination } from '../common/common.pagination';
 import { ConnectorQueryDto } from './dto/connector.query.dto';
 
 @Injectable()
@@ -54,7 +54,7 @@ export class ConnectorService {
     this.logger.log(`Deleted Connector with id '${id}'`);
   }
 
-  async validateConnectorsPriority(chargingStationId: string) {
+  private async validateConnectorsPriority(chargingStationId: string) {
     const connectors = await this.connectorRepository.getConnectorsByChargingStationId(chargingStationId);
     for (const connector of connectors) {
       if (connector.priority === true) {
