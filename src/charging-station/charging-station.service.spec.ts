@@ -27,8 +27,7 @@ describe('ChargingStationService', () => {
     beforeEach(async() => {
         const moduleRef = await Test.createTestingModule({
             providers: [
-                ChargingStationService,
-                {
+                ChargingStationService, {
                     provide: ChargingStationRepository,
                     useValue: {
                         getChargingStationById: jest.fn().mockResolvedValue({}),
@@ -38,14 +37,12 @@ describe('ChargingStationService', () => {
                         updateChargingStation: jest.fn(),
                         replaceConnector: jest.fn()
                     }
-                },
-                {
+                }, {
                     provide: ChargingStationTypeRepository,
                     useValue: {
                         getChargingStationTypeById: jest.fn().mockResolvedValue({plugCount: 3, priority: false}),
                     }
-                },
-                {
+                }, {
                     provide: ConnectorRepository,
                     useValue: {
                         getConnectorById: jest.fn().mockResolvedValue({chargingStationId: null}),

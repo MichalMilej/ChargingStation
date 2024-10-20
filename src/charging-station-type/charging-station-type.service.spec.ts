@@ -25,8 +25,7 @@ describe('ChargingStationTypeService', () => {
     beforeEach(async() => {
         const moduleRef = await Test.createTestingModule({
             providers: [
-                ChargingStationTypeService,
-                {
+                ChargingStationTypeService, {
                     provide: ChargingStationTypeRepository,
                     useValue: {
                         getChargingStationTypeById: jest.fn().mockResolvedValue(chargingStationTypeDto),

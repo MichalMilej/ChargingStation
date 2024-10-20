@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { CurrentType } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsEnum, IsNotEmpty, IsOptional, IsPositive } from "class-validator";
-import { PaginationDto } from "src/common/pagination.dto";
+import { PaginationDto } from "../../common/pagination.dto";
 
 export class ChargingStationTypeQueryDto extends PaginationDto {
 

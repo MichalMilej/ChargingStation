@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { Transform } from "class-transformer";
 import { IsNotEmpty, IsOptional, IsUUID } from "class-validator";
-import { PaginationDto } from "src/common/pagination.dto";
+import { PaginationDto } from "../../common/pagination.dto";
 
 export class ConnectorQueryDto extends PaginationDto {
 
