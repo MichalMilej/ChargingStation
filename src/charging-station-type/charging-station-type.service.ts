@@ -1,19 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DatabaseService } from 'src/common/database.service';
 import { CreateChargingStationTypeDto } from './dto/create-charging-station-type.dto';
 import { UpdateChargingStationTypeDto } from './dto/update-charging-station-type.dto';
 import { ChargingStationTypeRepository } from './charging-station-type.repository';
-import { CommonException } from 'src/common/common.exception';
-import { CommonPagination, Pagination } from 'src/common/common.pagination';
+import { CommonException } from '../common/common.exception';
+import { CommonPagination, Pagination } from '../common/common.pagination';
 import { ChargingStationTypeQueryDto } from './dto/charging-station-type.query.dto';
 
 @Injectable()
 export class ChargingStationTypeService {
     private readonly logger: Logger;
 
-    constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly chargingStationTypeRepository: ChargingStationTypeRepository) {
+    constructor(private readonly chargingStationTypeRepository: ChargingStationTypeRepository) {
         this.logger = new Logger(ChargingStationTypeService.name);
     }
 
