@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { DatabaseService } from "src/common/database.service";
+import { DatabaseService } from "../common/database.service";
 import { CreateChargingStationDto } from "./dto/create-charging-station.dto";
 import { UpdateChargingStationDto } from "./dto/update-charging-station.dto";
 import { ChargingStationQueryDto } from "./dto/charging-station.query.dto";

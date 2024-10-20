@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CreateChargingStationDto } from './dto/create-charging-station.dto';
 import { ChargingStationRepository } from './charging-station.repository';
-import { ChargingStationTypeRepository } from 'src/charging-station-type/charging-station-type.repository';
-import { CommonException } from 'src/common/common.exception';
-import { CommonPagination, Pagination } from 'src/common/common.pagination';
+import { ChargingStationTypeRepository } from '../charging-station-type/charging-station-type.repository';
+import { CommonException } from '../common/common.exception';
+import { CommonPagination, Pagination } from '../common/common.pagination';
 import { UpdateChargingStationDto } from './dto/update-charging-station.dto';
-import { ConnectorRepository } from 'src/connector/connector.repository';
+import { ConnectorRepository } from '../connector/connector.repository';
 import { ChargingStationQueryDto } from './dto/charging-station.query.dto';
 import { ReplaceConnectorDto } from './dto/replace-connector.dto';
 
@@ -65,9 +65,7 @@ export class ChargingStationService {
     }
 
     async updateChargingStation(id: string, updateChargingStationDto: UpdateChargingStationDto) {
-        if (await this.chargingStationRepository.getChargingStationById(id) === null) {
-            throw CommonException.notFoundException(this.logger, 'ChargingStation', 'id', id);
-        }
+        await this.retrieveChargingStationById(id);
         if (updateChargingStationDto.name !== undefined) {
             await this.validateNameConflict(updateChargingStationDto.name);
         }
@@ -82,13 +80,13 @@ export class ChargingStationService {
             await this.validateConnectorIds(updateChargingStationDto.connectorIds, updateChargingStationDto.chargingStationTypeId, id);
         }
         const updatedChargingStation = await this.chargingStationRepository.updateChargingStation(id, updateChargingStationDto);
-        this.logger.log(`Updated ChargingStation with id '${id}'`);('');
+        this.logger.log(`Updated ChargingStation with id '${id}'`);
         return updatedChargingStation;
     }
 
     async replaceConnector(connectorId: string, replaceConnectorDto: ReplaceConnectorDto) {
-        const oldConnector = await this.retrieveConnectorById(connectorId);
-        if (oldConnector.chargingStationId === null) {
+        const currentConnector = await this.retrieveConnectorById(connectorId);
+        if (currentConnector.chargingStationId === null) {
             throw CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is not bound to ChargingStation'`);
         }
         const newConnector = await this.retrieveConnectorById(replaceConnectorDto.newConnectorId);
@@ -96,9 +94,9 @@ export class ChargingStationService {
             throw CommonException.conflictException(this.logger, `Connector '${replaceConnectorDto.newConnectorId}' is bound to different ChargingStation`);
         }
         if (newConnector.priority === true) {
-            await this.validateConnectorsPriorityToReplaceConnector(oldConnector.chargingStationId, oldConnector.id);
+            await this.validateConnectorsPriorityToReplaceConnector(currentConnector.chargingStationId, currentConnector.id);
         }
-        const result = await this.chargingStationRepository.replaceConnector(oldConnector.chargingStationId, connectorId, replaceConnectorDto);
+        const result = await this.chargingStationRepository.replaceConnector(currentConnector.chargingStationId, connectorId, replaceConnectorDto);
         this.logger.log(`Replaced connector with id '${connectorId}' with connector with id '${replaceConnectorDto.newConnectorId}' in ChargingStation`);
         return result;
     }
@@ -177,7 +175,7 @@ export class ChargingStationService {
         for (const connectorId of connectorIds) {
             const connector = await this.connectorRepository.getConnectorById(connectorId);
             if (connector?.chargingStationId !== null && connector?.chargingStationId !== skipChargingStationWithId) {
-                throw CommonException.badRequestException(this.logger, `Connector with id '${connectorId}' is bound to different ChargingStation`);
+                throw CommonException.conflictException(this.logger, `Connector with id '${connectorId}' is bound to different ChargingStation`);
             }
         }
     }
@@ -190,19 +188,19 @@ export class ChargingStationService {
                 priorityTrueCount++;
             }
             if (priorityTrueCount > 1) {
-                throw CommonException.badRequestException(this.logger, 'Multiple connectors have priority set true');
+                throw CommonException.conflictException(this.logger, 'Multiple connectors have priority set true');
             }
         }
     }
 
-    private async validateConnectorsPriorityToReplaceConnector(chargingStationId: string, oldConnectorId: string) {
+    private async validateConnectorsPriorityToReplaceConnector(chargingStationId: string, currentConnectorId: string) {
         const chargingStationConnectors = await this.connectorRepository.getConnectorsByChargingStationId(chargingStationId);
             for (const connector of chargingStationConnectors) {
-                if (connector.id === oldConnectorId) {
+                if (connector.id === currentConnectorId) {
                     continue;
                 }
                 if (connector.priority === true) {
-                    throw CommonException.badRequestException(this.logger, 'Multiple connectors would have priority set true');
+                    throw CommonException.conflictException(this.logger, 'Multiple connectors would have priority set true');
                 }
             }
     }

@@ -49,17 +49,14 @@ describe('ConnectorService', () => {
             await connectorService.updateConnector(connectorId, {priority: true});
             expect(spy).toHaveBeenCalled();
         })
-
         it('should update - priority false', async() => {
             const spy = jest.spyOn(mockedConnectionRepository, 'updateConnector');
             await connectorService.updateConnector(connectorId, {priority: false});
             expect(spy).toHaveBeenCalled();
         })
-
         it('should throw ConflictException - two connectors would have priority set true', async() => {
             await expect(connectorService.updateConnector(connectorId, {priority: true})).rejects.toThrow(ConflictException);
         })
-
         it('should update - only one priority set true', async() => {
             mockedConnectionRepository.getConnectorsByChargingStationId = jest.fn().mockResolvedValue([
                 {id: connectorId, priority: false, chargingStationId: chargingStationId},
@@ -76,7 +73,6 @@ describe('ConnectorService', () => {
         it ('should throw ConflictException - chargingStationId bound', async() => {
             await expect(connectorService.deleteConnector(connectorId)).rejects.toThrow(ConflictException);
         })
-
         it ('should delete', async() => {
             const spy = jest.spyOn(mockedConnectionRepository, 'deleteConnector');
             mockedConnectionRepository.getConnectorById = jest.fn().mockResolvedValue({ chargingStationId: null });

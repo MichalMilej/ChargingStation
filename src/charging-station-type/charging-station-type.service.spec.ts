@@ -47,17 +47,14 @@ describe('ChargingStationTypeService', () => {
             mockedChargingStationTypeRepository.getChargingStationTypeById = jest.fn().mockResolvedValue(null);
             await expect(chargingStationTypeService.getChargingStationTypeById(chargingStationTypeId)).rejects.toThrow(NotFoundException);
         })
-
         it ('should return ChargingStationTypeById', async() => {
             const result = await chargingStationTypeService.getChargingStationTypeById(chargingStationTypeId);
             expect(result).toEqual(chargingStationTypeDto);
         })
-
         it ('should throw notFoundException - name not found', async() => {
             mockedChargingStationTypeRepository.getChargingStationTypeByName = jest.fn().mockResolvedValue(null);
             await expect(chargingStationTypeService.getChargingStationTypeByName(chargingStationTypeId)).rejects.toThrow(NotFoundException);
         })
-
         it ('should return ChargingStationTypeByName', async() => {
             const result = await chargingStationTypeService.getChargingStationTypeById(chargingStationTypeId);
             expect(result).toEqual(chargingStationTypeDto);

@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional, IsUUID } from "class-validator";
-import { PaginationDto } from "src/common/pagination.dto";
+import { PaginationDto } from "../../common/pagination.dto";
 
 export class ChargingStationQueryDto extends PaginationDto {
    
