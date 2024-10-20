@@ -3,13 +3,13 @@ E-mobility charging station project in TypeScript.
 
 1. Configuration variables are stored in .env file.
 
-2. You can run application fully in Docker. All you need is to have it installed and run the following commend in the CLI, while being in the current directory.
+2. You can run application fully in Docker. All you need is to have it installed and run the following commend in the CLI, while being in the project directory.
 
 ```
 docker-compose --profile full_docker up
 ```
 
-You can also use Docker partially (only container with database). In this case you also need Node.js. First set .env variable DB_HOST="localhost". Then apply following commands, while being in the current directory to run the app.
+You can also use Docker partially (only container with database). In this case you also need Node.js. First set .env variable DB_HOST="localhost". Then apply following commands, while being in the the project directory to run the app.
 
 ```
 docker-compose up
