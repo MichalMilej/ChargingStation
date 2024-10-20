@@ -42,7 +42,7 @@ export class ChargingStationController {
     return this.chargingStationService.updateChargingStation(id, updateChargingStationDto);
   }
 
-  @Patch('connector/:connectorId')
+  @Patch('connectors/:connectorId')
   replaceConnector(@Param('connectorId', ParseUUIDPipe) connectorId: string, @Body() replaceConnectorDto: ReplaceConnectorDto) {
     return this.chargingStationService.replaceConnector(connectorId, replaceConnectorDto);
   }

@@ -35,7 +35,7 @@ describe('ChargingStationTypeController (e2e)', () => {
         await request(app.getHttpServer())
             .post('/charging-station-types')
             .send({
-                name: 'ch1',
+                name: 'small',
                 plugCount: 2,
                 efficiency: 20,
                 currentType: CurrentType.DC
@@ -52,7 +52,7 @@ describe('ChargingStationTypeController (e2e)', () => {
     it('should get ChargingStationType by name', async() => {
         mockedChargingStationTypeService.getChargingStationTypeByName = jest.fn();
         await request(app.getHttpServer())
-            .get('/charging-station-types/name/ch1')
+            .get('/charging-station-types/name/small')
             .expect(200);
     })
     it('should get ChargingStationTypes', async() => {
