@@ -7,6 +7,6 @@ COPY . .
 RUN npm install
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE ${APP_PORT}
 
 CMD [ "npm", "run", "start:migrate:dev"]
